@@ -1,0 +1,329 @@
+# Low-voltage work in Houston, Texas, with K-12 school rules.
+#
+# Project keys this pack reads (set them under [project]):
+#   site_type      = "k12" | "commercial"
+#   jurisdiction   = "city_of_houston" | "harris_county_unincorporated" | "other"
+#   tax_exempt     = true for public ISDs (Comptroller form 01-339)
+#   federal_funds  = true if any federal grant money pays for it
+#   erate          = true if E-Rate pays for any of it
+#   use_dir_list   = true to also exclude the Texas prohibited-hardware list (recommended)
+#   in_floodplain  = true if the building is in the 100- or 500-year floodplain
+#
+# Spec names the hard rules check (put them in catalog.toml):
+#   standards (list of listings, e.g. ["UL 294"]), fail_safe, voice_evac, addressable,
+#   fire_alarm_release, enclosure, fcc_certified, features (list)
+#
+# Categories this pack knows: camera, vms, access_control, maglock, fire_alarm_panel,
+# panic_alert, errcs_bda, key_box, switch, wifi_ap, cable, intrusion
+
+[pack]
+name = "Houston low voltage (K-12)"
+as_of = "2026-11-15"
+disclaimer = "A planning aid, not legal advice. Codes and statutes change; confirm with the authority having jurisdiction and the district's purchasing office before buying. Statute text was read from a mirror current to May 2025 plus 2025 bill analyses."
+
+# ---------------------------------------------------------------- hard equipment rules
+
+[[rule]]
+id = "FED-889"
+title = "No covered telecom/video makers on federal or E-Rate money"
+categories = ["*"]
+when = { federal_funds = true }
+banned_makers = ["Huawei", "ZTE", "Hytera", "Hikvision", "Dahua"]
+cite = "2 CFR 200.216 (NDAA s.889)"
+url = "https://www.ecfr.gov/current/title-2/section-200.216"
+
+[[rule]]
+id = "FED-ERATE"
+title = "No covered-list equipment bought with E-Rate funds"
+categories = ["*"]
+when = { erate = true }
+banned_makers = ["Huawei", "ZTE", "Hytera", "Hikvision", "Dahua"]
+cite = "47 CFR 54.9, 54.10"
+url = "https://www.ecfr.gov/current/title-47/chapter-I/subchapter-B/part-54"
+
+[[rule]]
+id = "TX-DIR-HW"
+title = "Texas prohibited-technology hardware list (default exclusion)"
+categories = ["*"]
+when = { use_dir_list = true }
+banned_makers = ["Autel", "CATL", "Dahua", "Gotion", "Hisense", "Huawei", "Hikvision", "Hytera",
+                 "NucTech", "RoboSense", "DJI", "TCL", "TP-Link", "Uniview", "Geosun", "Xiaomi", "ZTE",
+                 "Kaspersky"]
+cite = "Texas prohibited technologies list (hardware list updated 2026-02-04)"
+url = "https://dir.texas.gov/information-security/covered-applications-and-prohibited-technologies"
+
+[[rule]]
+id = "HOU-IBC-1010-ACS"
+title = "Access-control equipment on egress doors must be UL 294 listed"
+categories = ["access_control", "maglock"]
+when = { jurisdiction = "city_of_houston" }
+require.standards = { all = ["UL 294"] }
+require.fire_alarm_release = { eq = true }
+cite = "Houston IBC 1010.2.12 (2021 IBC as amended, Ord. 2023-9071)"
+url = "https://www.houstonpermittingcenter.org/media/9031/download"
+
+[[rule]]
+id = "HOU-IBC-1010-FAILSAFE"
+title = "Electrically locked egress doors unlock on loss of power"
+categories = ["maglock"]
+when = { jurisdiction = "city_of_houston" }
+require.fail_safe = { eq = true }
+cite = "Houston IBC 1010.2.12"
+url = "https://www.houstonpermittingcenter.org/media/9031/download"
+
+[[rule]]
+id = "HOU-IFC-907-E"
+title = "School fire alarm: listed control unit with emergency voice/alarm communication"
+categories = ["fire_alarm_panel"]
+when = { site_type = "k12" }
+require.standards = { all = ["UL 864"] }
+require.voice_evac = { eq = true }
+cite = "Houston IFC 907.2.3; NFPA 72-2019 (28 TAC 34.607)"
+url = "https://www.houstonpermittingcenter.org/media/9051/download"
+
+[[rule]]
+id = "HC-FA-ADDR"
+title = "Unincorporated Harris County: addressable fire alarm"
+categories = ["fire_alarm_panel"]
+when = { jurisdiction = "harris_county_unincorporated" }
+require.addressable = { eq = true }
+cite = "Harris County Office of the County Engineer, fire alarm permit requirements"
+url = "https://oce.harriscountytx.gov/Apply-for-Permit/Permits-A-to-Z/Fire-Alarm-System"
+
+[[rule]]
+id = "HOU-IFC-510-BDA"
+title = "ERRCS signal boosters: UL 2524, FCC certified, NEMA 4 enclosure"
+categories = ["errcs_bda"]
+when = { jurisdiction = "city_of_houston" }
+require.standards = { all = ["UL 2524"] }
+require.fcc_certified = { eq = true }
+require.enclosure = { in = ["NEMA 4", "NEMA 4X"] }
+cite = "Houston IFC 510"
+url = "https://www.houstonpermittingcenter.org/media/9051/download"
+
+[[rule]]
+id = "HOU-IFC-506-KNOX"
+title = "Key box must be UL 1037 listed"
+categories = ["key_box"]
+when = { jurisdiction = "city_of_houston" }
+require.standards = { all = ["UL 1037"] }
+cite = "Houston IFC 506"
+url = "https://www.houstonpermittingcenter.org/media/9051/download"
+
+[[rule]]
+id = "TX-61.1031-PANIC"
+title = "Silent panic alert: triggers on 9-1-1 calls, reports location, locks exterior doors"
+categories = ["panic_alert"]
+when = { site_type = "k12" }
+require.features = { all = ["911 call trigger", "location reporting", "exterior door lockdown"] }
+cite = "19 TAC 61.1031(c)(10)(B); TEC 37.117"
+url = "https://www.law.cornell.edu/regulations/texas/19-Tex-Admin-Code-SS-61-1031"
+
+# ---------------------------------------------------------------- checklist: licences
+
+[[check]]
+id = "TX-1702-DPS"
+kind = "licence"
+title = "Cameras, access control and intrusion need a DPS-licensed company"
+categories = ["camera", "vms", "access_control", "maglock", "intrusion", "panic_alert"]
+text = "A recorded or monitored camera system counts as an alarm system. Use a DPS Private Security Class B or C licensed company, and each installer needs an individual DPS licence. Check licence numbers before award."
+cite = "Occ. Code 1702.002(1)(C), 1702.105, 1702.1055, 1702.221"
+url = "https://www.dps.texas.gov/section/private-security/types-company-and-school-licenses"
+
+[[check]]
+id = "TX-6002-SFMO"
+kind = "licence"
+title = "Fire alarm work needs a State Fire Marshal registered firm"
+categories = ["fire_alarm_panel"]
+text = "The installing firm must hold SFMO fire alarm registration, and a licensed fire alarm planning superintendent signs the plans. Texas has adopted NFPA 72-2019."
+cite = "Ins. Code 6002.151; 28 TAC 34.607, 34.611"
+url = "https://www.law.cornell.edu/regulations/texas/28-Tex-Admin-Code-SS-34-611"
+
+[[check]]
+id = "TX-1305-LV"
+kind = "licence"
+title = "Low-voltage cabling needs no electrician licence; the 120 V feeds do"
+categories = ["switch", "wifi_ap", "cable", "camera", "access_control", "maglock", "fire_alarm_panel", "errcs_bda", "panic_alert"]
+text = "Class 2/3 power-limited, fire alarm, fibre and communications circuits are exempt from the electrician licence. Any new 120 V circuit for head-end gear, door power supplies or BDAs needs a licensed electrician and, in Houston, a City-registered electrical contractor and permit."
+cite = "Occ. Code 1305.003(a)(12); Houston NEC admin. 301.2, 302.1, 403"
+url = "https://www.houstonpermittingcenter.org/media/9076/download"
+
+# ---------------------------------------------------------------- checklist: permits and inspection
+
+[[check]]
+id = "HOU-PERMIT"
+kind = "permit"
+title = "City of Houston permits apply to ISD projects"
+when = { jurisdiction = "city_of_houston" }
+text = "Houston enforces the 2021 I-codes and the 2023 NEC (in force since 2024-01-01), and school districts must get City permits. Power-limited work under 50 V / 50 W, and sound, phone and burglar-alarm wiring, need no electrical permit except for the power connection. Fire alarm, ERRCS and access-controlled egress doors need fire/building permits."
+cite = "Ord. 2023-9071; Houston IBC 105.2; Houston NEC admin. 403"
+url = "https://www.houstonpermittingcenter.org/media/9031/download"
+
+[[check]]
+id = "HOU-IFC-907-MON"
+kind = "inspection"
+title = "School fire alarm must be monitored"
+categories = ["fire_alarm_panel"]
+when = { site_type = "k12" }
+text = "Group E fire alarm systems need manual and automatic initiation, emergency voice/alarm communication, and monitoring by an approved supervising station. Budget the monitoring contract."
+cite = "Houston IFC 907.2.3; IBC 901.6.3"
+url = "https://www.houstonpermittingcenter.org/media/9051/download"
+
+[[check]]
+id = "HOU-IFC-510-ERRCS"
+kind = "inspection"
+title = "Emergency responder radio system design, install and acceptance"
+categories = ["errcs_bda"]
+when = { jurisdiction = "city_of_houston" }
+text = "PE-sealed design; installers with an FCC GROL; 42+42 channel capacity; omni donor antenna; NEMA 3R battery enclosure; 95% coverage acceptance test and an annual retest. A City-registered special inspector is required for buildings over 3 storeys, over 50,000 sq ft, or with a basement."
+cite = "Houston IFC 510"
+url = "https://www.houstonpermittingcenter.org/media/9051/download"
+
+[[check]]
+id = "HOU-IBC-1010-PTE"
+kind = "inspection"
+title = "Locked egress doors: push-to-exit and fire-alarm release"
+categories = ["access_control", "maglock"]
+when = { jurisdiction = "city_of_houston" }
+text = "Each electrically locked egress door needs a 'PUSH TO EXIT' device that cuts lock power directly, and must unlock on fire alarm activation and on loss of power. Coordinate the fire alarm relay with the FA contractor."
+cite = "Houston IBC 1010.2.12, 1010.2.16"
+url = "https://www.houstonpermittingcenter.org/media/9031/download"
+
+[[check]]
+id = "HOU-IFC-506-KNOXPERMIT"
+kind = "permit"
+title = "Knox-type key box and HFD operational permit"
+when = { site_type = "k12" }
+text = "Campuses need a rapid-entry key box (UL 1037) for first responders; Houston requires an operational permit for it."
+cite = "19 TAC 61.1031(c)(10)(A); Houston IFC 506"
+url = "https://www.law.cornell.edu/regulations/texas/19-Tex-Admin-Code-SS-61-1031"
+
+[[check]]
+id = "HOU-ALARM-PERMIT"
+kind = "permit"
+title = "City burglar/panic alarm permit"
+categories = ["intrusion", "panic_alert"]
+when = { jurisdiction = "city_of_houston" }
+text = "Monitored burglar and panic alarms need a City alarm permit; there is a government-entity permit type."
+cite = "City of Houston alarm permit application"
+url = "https://cohips.houstontx.gov/ara/rp/burglar-alarm-app-and-fee.pdf"
+
+# ---------------------------------------------------------------- checklist: Texas school safety
+
+[[check]]
+id = "TX-37.117-PANIC"
+kind = "school safety"
+title = "Silent panic alert in every classroom"
+when = { site_type = "k12" }
+text = "Required from the 2025-26 school year. Confirm every instructional room is covered, including portables, and that the system integrates with exterior door locking."
+cite = "TEC 37.117; 19 TAC 61.1031(c)(10)(B)"
+url = "https://texas.public.law/statutes/tex._educ._code_section_37.117"
+
+[[check]]
+id = "TX-61.1031-DOORS"
+kind = "school safety"
+title = "Exterior doors, door numbering, entrance ID, campus maps"
+when = { site_type = "k12" }
+text = "Exterior doors must self-close and re-lock, with a weekly inspection log. Number doors with 4-inch characters running clockwise. Main entrances need visual identification of visitors (camera, intercom or vestibule). Give first responders current campus maps."
+cite = "19 TAC 61.1031(c)(1)-(4), (d); TEC 37.117"
+url = "https://www.law.cornell.edu/regulations/texas/19-Tex-Admin-Code-SS-61-1031"
+
+[[check]]
+id = "TX-61.1031-RADIO"
+kind = "school safety"
+title = "First-responder radio coverage inside the building"
+when = { site_type = "k12" }
+text = "Campus radios must reach first responders throughout most of each building. Commission a coverage test; where it fails, plan an ERRCS/BDA."
+cite = "19 TAC 61.1031(c)(9)"
+url = "https://www.law.cornell.edu/regulations/texas/19-Tex-Admin-Code-SS-61-1031"
+
+[[check]]
+id = "TX-29.022-SPED"
+kind = "records"
+title = "Special-education classroom cameras"
+categories = ["camera", "vms"]
+when = { site_type = "k12" }
+text = "On request, self-contained special-ed classrooms get video WITH audio. Keep recordings at least 3 months, with legal hold on request. No views into bathrooms or changing areas. Written notice to parents and staff is required; signage is not. Size VMS storage for the 3-month retention."
+cite = "TEC 29.022"
+url = "https://texas.public.law/statutes/tex._educ._code_section_29.022"
+
+[[check]]
+id = "TX-37.108-AUDIT"
+kind = "school safety"
+title = "Classroom phone access and the 3-year safety audit"
+when = { site_type = "k12" }
+text = "Every classroom needs a way to call for help, and the district's safety and security audit runs on a 3-year cycle. Tie this project's door, camera and alert changes into the audit record."
+cite = "TEC 37.108"
+url = "https://texas.public.law/statutes/tex._educ._code_section_37.108"
+
+# ---------------------------------------------------------------- checklist: vendors and contracts
+
+[[check]]
+id = "TX-2275"
+kind = "contract"
+title = "Critical-infrastructure clause for network and security systems"
+categories = ["switch", "wifi_ap", "vms", "access_control", "camera", "errcs_bda"]
+text = "Do not contract with a company owned by, or headquartered in, China, Iran, North Korea or Russia if the contract gives it remote access to network, cybersecurity or communication systems (warranty and support access excepted). Check cloud-managed products."
+cite = "Gov't Code 2275.0101-.0103"
+url = "https://texas.public.law/statutes/tex._gov't_code_section_2275.0102"
+
+[[check]]
+id = "TX-ERATE-470"
+kind = "procurement"
+title = "E-Rate competitive bidding"
+when = { erate = true }
+text = "Post FCC Form 470 and wait at least 28 days before signing a contract (vendors may not write the 470 or help evaluate bids); Category 2 spending comes from the school's 5-year budget."
+cite = "47 CFR 54.503"
+url = "https://www.ecfr.gov/current/title-47/chapter-I/subchapter-B/part-54"
+
+[[check]]
+id = "HOU-FLOOD"
+kind = "site"
+title = "Floodplain: raise head-end and panels"
+when = { in_floodplain = true }
+text = "In Houston's floodplain, put MDF/IDF racks, fire alarm panels and UPSs at or above the 500-year flood elevation plus 2 feet for commercial buildings."
+cite = "Houston Code ch. 19; Houston IBC 1612"
+url = "https://www.houstonpermittingcenter.org/news-events/guidance-elevating-air-conditioner-systems-floodplain"
+
+# ---------------------------------------------------------------- whole-order rules
+
+[[order_rule]]
+id = "TX-44.031"
+title = "Competitive procurement at $100,000"
+when = { site_type = "k12" }
+basis = "order"
+min_total = 100000
+require_vendor_attr = "contract"
+text = "At $100,000 or more (aggregated over 12 months) a Texas ISD must use a TEC 44.031 method. Buying through a purchasing co-op contract (BuyBoard, Choice Partners/HCDE, TIPS, DIR) satisfies it."
+cite = "TEC 44.031 (threshold raised to $100,000 by SB 1173, eff. 2025-09-01); Gov't Code 791.025"
+url = "https://capitol.texas.gov/tlodocs/89R/analysis/html/SB01173F.htm"
+
+[[order_rule]]
+id = "TX-VERIFY"
+title = "Israel, energy-company and firearm verifications"
+basis = "vendor"
+min_total = 100000
+require_vendor_attr = "verifications_on_file"
+text = "Contracts of $100,000+ with a company of 10+ full-time employees need the written verifications."
+cite = "Gov't Code 2271.002, 2274.002, 2276.002"
+url = "https://texas.public.law/statutes/tex._gov't_code_section_2271.002"
+
+[[order_rule]]
+id = "FED-THRESH"
+title = "Federal-funds purchasing thresholds"
+when = { federal_funds = true }
+basis = "order"
+min_total = 15000
+require_vendor_attr = "contract"
+text = "With federal funds, purchases above the $15,000 micro-purchase threshold need competition (quotes up to $350,000, formal procurement above)."
+cite = "2 CFR 200.320; TEA federal threshold letter"
+url = "https://tea.texas.gov/taa-letters/federal-grant-threshold-changes-update"
+
+# ---------------------------------------------------------------- tax
+
+[tax]
+rate = 0.0825
+label = "Sales tax (Houston 8.25%)"
+exempt_when = { tax_exempt = true }
+exempt_note = "public school district, Comptroller form 01-339"
+cite = "Tax Code 151.309, 151.311"

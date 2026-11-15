@@ -16,6 +16,9 @@ class Requirement:
     prefer: dict[str, str] = field(default_factory=dict)  # spec -> "high" | "low"
     shortlist: int = 3
     notes: str = ""
+    # filled in by rule packs: (label, spec, rule) and (label, [maker names])
+    pack_rules: list[tuple[str, str, dict[str, Any]]] = field(default_factory=list)
+    banned_makers: list[tuple[str, list[str]]] = field(default_factory=list)
 
 
 @dataclass
@@ -46,6 +49,7 @@ class Vendor:
     free_shipping_over: float | None = None
     min_order: float = 0.0
     price_selector: str = ""  # CSS selector used when a page has no schema.org price
+    attrs: dict[str, Any] = field(default_factory=dict)  # e.g. hub = true, contracts = ["BuyBoard ..."]
 
 
 @dataclass

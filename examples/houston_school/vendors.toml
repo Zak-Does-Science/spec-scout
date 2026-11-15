@@ -1,0 +1,22 @@
+# Fictional integrators and distributors. Extra keys (contract, verifications_on_file, hub)
+# are read by the rule pack's whole-order rules.
+
+[[vendor]]
+id = "gulfline"
+name = "Gulfline Integrated Systems"
+shipping = 0
+contract = "purchasing co-op contract (example)"
+verifications_on_file = true
+
+[[vendor]]
+id = "bayou"
+name = "Bayou Security Supply"
+shipping = 150
+free_shipping_over = 25000
+
+[[vendor]]
+id = "netwest"
+name = "NetWest Distribution"
+shipping = 95
+contract = "DIR cooperative contract (example)"
+verifications_on_file = true

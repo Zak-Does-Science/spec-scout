@@ -1,0 +1,77 @@
+# A made-up example: a safety and network refresh at one public elementary campus inside
+# Houston city limits, paid partly with a federal grant. Prices, products and vendors are fictional.
+
+[project]
+name = "Elementary campus safety + network refresh (example)"
+site_type = "k12"
+jurisdiction = "city_of_houston"
+tax_exempt = true
+federal_funds = true
+erate = false
+use_dir_list = true
+in_floodplain = true
+rulepacks = ["../../rulepacks/houston_k12_low_voltage.toml"]
+
+[[item]]
+id = "S1"
+name = "Indoor dome camera, 4 MP"
+qty = 36
+category = "camera"
+require.resolution_mp = { min = 4 }
+require.poe = { eq = true }
+prefer.resolution_mp = "high"
+
+[[item]]
+id = "S2"
+name = "Access control door controller (2-door)"
+qty = 6
+category = "access_control"
+require.doors = { min = 2 }
+
+[[item]]
+id = "S3"
+name = "Electromagnetic lock, 1200 lb"
+qty = 12
+category = "maglock"
+require.holding_lb = { min = 1200 }
+
+[[item]]
+id = "S4"
+name = "Fire alarm control unit"
+qty = 1
+category = "fire_alarm_panel"
+require.points = { min = 250 }
+
+[[item]]
+id = "S5"
+name = "Silent panic alert system (campus licence)"
+qty = 1
+category = "panic_alert"
+
+[[item]]
+id = "S6"
+name = "ERRCS bi-directional amplifier"
+qty = 1
+category = "errcs_bda"
+
+[[item]]
+id = "S7"
+name = "Rapid-entry key box"
+qty = 1
+category = "key_box"
+
+[[item]]
+id = "S8"
+name = "Managed PoE switch, 48 port"
+qty = 4
+category = "switch"
+require.ports = { min = 48 }
+require.poe_budget_w = { min = 740 }
+prefer.poe_budget_w = "high"
+
+[[item]]
+id = "S9"
+name = "Wi-Fi 6E access point"
+qty = 28
+category = "wifi_ap"
+require.wifi_gen = { min = 6 }

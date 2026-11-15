@@ -41,6 +41,15 @@ def _check(name: str, rule: dict, value) -> str | None:
 def evaluate(req: Requirement, cand: Candidate) -> Match:
     failures = [msg for name, rule in req.constraints.items()
                 if (msg := _check(name, rule, cand.specs.get(name)))]
+    # rules added by a rule pack carry their own label, e.g. "[TX-2274] standards: missing ..."
+    for label, name, rule in req.pack_rules:
+        if msg := _check(name, rule, cand.specs.get(name)):
+            failures.append(f"[{label}] {msg}")
+    maker = (cand.maker or "").lower()
+    for label, makers in req.banned_makers:
+        hit = next((m for m in makers if m.lower() in maker), None)
+        if hit:
+            failures.append(f"[{label}] maker {cand.maker} is prohibited")
     return Match(req, cand, passed=not failures, failures=failures, score=0.0)
 
 

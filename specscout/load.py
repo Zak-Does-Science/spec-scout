@@ -17,6 +17,11 @@ def _toml(path: Path) -> dict:
 
 
 def load_project(path: Path) -> tuple[str, list[Requirement]]:
+    return load_project_full(path)[:2]
+
+
+def load_project_full(path: Path) -> tuple[str, list[Requirement], dict]:
+    """Return (name, requirements, the whole [project] table with rule-pack paths resolved)."""
     d = _toml(path)
     reqs = []
     for r in d.get("item", []):
@@ -33,7 +38,9 @@ def load_project(path: Path) -> tuple[str, list[Requirement]]:
     ids = [r.id for r in reqs]
     if len(ids) != len(set(ids)):
         raise ValueError(f"{path}: item ids must be unique")
-    return d.get("project", {}).get("name", path.stem), reqs
+    proj = dict(d.get("project", {}))
+    proj["rulepacks"] = [(path.parent / p).resolve() for p in proj.get("rulepacks", [])]
+    return proj.get("name", path.stem), reqs, proj
 
 
 def load_catalog(path: Path) -> list[Candidate]:
@@ -43,6 +50,9 @@ def load_catalog(path: Path) -> list[Candidate]:
             for c in d.get("model", [])]
 
 
+_VENDOR_KEYS = {"id", "name", "approved", "shipping", "free_shipping_over", "min_order", "price_selector"}
+
+
 def load_vendors(path: Path) -> tuple[list[Vendor], list[dict]]:
     """Return the vendors and the list of product pages to check live."""
     d = _toml(path)
@@ -50,7 +60,8 @@ def load_vendors(path: Path) -> tuple[list[Vendor], list[dict]]:
                       shipping=float(v.get("shipping", 0)),
                       free_shipping_over=v.get("free_shipping_over"),
                       min_order=float(v.get("min_order", 0)),
-                      price_selector=v.get("price_selector", ""))
+                      price_selector=v.get("price_selector", ""),
+                      attrs={k: x for k, x in v.items() if k not in _VENDOR_KEYS})
                for v in d.get("vendor", [])]
     pages = d.get("page", [])
     for p in pages:  # a bare path (like the bundled examples) is read relative to this file

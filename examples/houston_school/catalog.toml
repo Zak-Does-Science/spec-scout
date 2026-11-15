@@ -1,0 +1,101 @@
+# Fictional products, except the makers named on federal or Texas prohibited lists, which appear
+# only so you can watch the rule pack reject them. Their model names here are made up.
+
+[[model]]
+model = "OD-4D"
+maker = "Owlridge Video"
+category = "camera"
+specs = { resolution_mp = 4, poe = true }
+[[model]]
+model = "OD-8D"
+maker = "Owlridge Video"
+category = "camera"
+specs = { resolution_mp = 8, poe = true }
+[[model]]
+model = "Example dome 4MP"
+maker = "Hikvision"
+category = "camera"
+specs = { resolution_mp = 4, poe = true }
+[[model]]
+model = "Example dome 5MP"
+maker = "Uniview"
+category = "camera"
+specs = { resolution_mp = 5, poe = true }
+
+[[model]]
+model = "GateKeep 2"
+maker = "Lattice Access"
+category = "access_control"
+specs = { doors = 2, standards = ["UL 294"], fire_alarm_release = true }
+[[model]]
+model = "DoorBrain Lite"
+maker = "Pinecone Security"
+category = "access_control"
+specs = { doors = 2, standards = ["CE"], fire_alarm_release = false }
+
+[[model]]
+model = "HoldFast 1200"
+maker = "Lattice Access"
+category = "maglock"
+specs = { holding_lb = 1200, standards = ["UL 294", "UL 10C"], fail_safe = true, fire_alarm_release = true }
+[[model]]
+model = "IronGrip 1200"
+maker = "Pinecone Security"
+category = "maglock"
+specs = { holding_lb = 1200, standards = ["UL 294"], fail_safe = true, fire_alarm_release = true }
+
+[[model]]
+model = "Beacon 500V"
+maker = "Signalcrest"
+category = "fire_alarm_panel"
+specs = { points = 500, standards = ["UL 864"], voice_evac = true, addressable = true }
+[[model]]
+model = "Beacon 250"
+maker = "Signalcrest"
+category = "fire_alarm_panel"
+specs = { points = 250, standards = ["UL 864"], voice_evac = false, addressable = true }
+
+[[model]]
+model = "QuietCall Campus"
+maker = "Harborlight Safety"
+category = "panic_alert"
+specs = { features = ["911 call trigger", "location reporting", "exterior door lockdown", "mobile app"] }
+[[model]]
+model = "AlertButton Basic"
+maker = "Pinecone Security"
+category = "panic_alert"
+specs = { features = ["location reporting", "mobile app"] }
+
+[[model]]
+model = "RelayPoint PS-2"
+maker = "Ironbark RF"
+category = "errcs_bda"
+specs = { standards = ["UL 2524"], fcc_certified = true, enclosure = "NEMA 4" }
+[[model]]
+model = "RelayPoint Indoor"
+maker = "Ironbark RF"
+category = "errcs_bda"
+specs = { standards = ["UL 2524"], fcc_certified = true, enclosure = "NEMA 1" }
+
+[[model]]
+model = "VaultBox 3200"
+maker = "Keystead"
+category = "key_box"
+specs = { standards = ["UL 1037"] }
+
+[[model]]
+model = "CX-48P"
+maker = "Corvid Networks"
+category = "switch"
+specs = { ports = 48, poe_budget_w = 740 }
+[[model]]
+model = "Example 48-port PoE"
+maker = "TP-Link"
+category = "switch"
+specs = { ports = 48, poe_budget_w = 740 }
+
+[[model]]
+model = "AirLattice 6E"
+maker = "Corvid Networks"
+category = "wifi_ap"
+specs = { wifi_gen = 6 }

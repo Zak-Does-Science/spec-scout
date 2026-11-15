@@ -30,7 +30,9 @@ def _header(ws, cols, widths):
 
 def write(path: Path, project: str, lines: list[Line], shipping: dict[str, float],
           vendors: list[Vendor], shortlists: dict[str, list[Match]],
-          rejected: dict[str, list[Match]], unfillable: list[str]) -> None:
+          rejected: dict[str, list[Match]], unfillable: list[str],
+          tax: tuple[float, str, str] = (0.0, "", ""), compliance: list[dict] | None = None,
+          packs: list[dict] | None = None) -> None:
     vname = {v.id: v.name for v in vendors}
     wb = Workbook()
 
@@ -55,8 +57,12 @@ def write(path: Path, project: str, lines: list[Line], shipping: dict[str, float
     ws.append(["", "Items subtotal", "", "", "", "", "", f"=SUM(H2:H{last})"])
     sub_row = ws.max_row
     ws.append(["", "Shipping", "", "", "", "", "", "='Vendors'!D" + str(len(shipping) + 2)])
-    ws.append(["", "Order total", "", "", "", "", "", f"=H{sub_row}+H{sub_row + 1}"])
-    for rr in range(sub_row, sub_row + 3):
+    rate, tax_label, tax_cite = tax
+    ws.append(["", tax_label or "Sales tax", "", "", "", "", rate,
+               f"=ROUND(H{sub_row}*G{sub_row + 2},2)", "", "", tax_cite])
+    ws.cell(row=sub_row + 2, column=7).number_format = "0.00%"
+    ws.append(["", "Order total", "", "", "", "", "", f"=H{sub_row}+H{sub_row + 1}+H{sub_row + 2}"])
+    for rr in range(sub_row, sub_row + 4):
         ws.cell(row=rr, column=2).font = Font(bold=True)
         ws.cell(row=rr, column=8).number_format = MONEY
         ws.cell(row=rr, column=8).font = Font(bold=True)
@@ -88,10 +94,28 @@ def write(path: Path, project: str, lines: list[Line], shipping: dict[str, float
     for row in ms.iter_rows(min_row=2):
         row[5].alignment = Alignment(wrap_text=True, vertical="top")
 
+    if compliance is not None:
+        cs = wb.create_sheet("Compliance")
+        _header(cs, ["Status", "Kind", "Rule", "Title", "What to do", "Items", "Citation", "Source", "Pack"],
+                [9, 12, 14, 30, 70, 12, 26, 40, 24])
+        for row in compliance:
+            cs.append([row["status"], row["kind"], row["id"], row["title"], row["text"], row["items"],
+                       row["cite"], row["url"], row["pack"]])
+            if row["status"] == "CHECK":
+                for c in range(1, 10):
+                    cs.cell(row=cs.max_row, column=c).fill = WARN
+        for r in cs.iter_rows(min_row=2):
+            for c in (r[3], r[4]):
+                c.alignment = Alignment(wrap_text=True, vertical="top")
+
     info = wb.create_sheet("About")
     info.append(["Project", project])
     info.append(["Rule", "Every unit price must trace to a screenshot or a price-list row (Evidence column)."])
     info.append(["Rule", "Orange rows have no evidence and must be quoted by hand before purchase."])
+    for pk in packs or []:
+        meta = pk.get("pack", {})
+        info.append(["Rule pack", f"{meta.get('name')} (checked {meta.get('as_of', '?')}). "
+                                  f"{meta.get('disclaimer', '')}"])
     info.column_dimensions["A"].width, info.column_dimensions["B"].width = 10, 90
     wb.save(path)
 
