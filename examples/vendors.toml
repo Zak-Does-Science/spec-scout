@@ -1,0 +1,62 @@
+# Vendors procurement has approved, their shipping terms, and product pages to check live.
+# quickbuy is in the price list but NOT approved, so spec-scout will never pick it.
+
+[[vendor]]
+id = "northgate"
+name = "Northgate Lab Supply"
+shipping = 85.0
+free_shipping_over = 10000.0
+
+[[vendor]]
+id = "bluestem"
+name = "Bluestem Scientific"
+shipping = 40.0
+min_order = 250.0
+
+[[vendor]]
+id = "harbor"
+name = "Harbor Direct"
+shipping = 120.0
+price_selector = ".price-now"   # Harbor's pages have no schema.org data, so read this element
+
+[[vendor]]
+id = "quickbuy"
+name = "QuickBuy Marketplace"
+approved = false
+
+# Product pages. These point at the offline demo pages in vendor_pages/;
+# for real use, put the vendor's product URL here.
+[[page]]
+vendor = "northgate"
+model = "KC-1524R"
+url = "vendor_pages/northgate_kc-1524r.html"
+lead_days = 10
+
+[[page]]
+vendor = "northgate"
+model = "Polar 450H"
+url = "vendor_pages/northgate_polar-450h.html"
+lead_days = 30
+
+[[page]]
+vendor = "harbor"
+model = "Tundra U410"
+url = "vendor_pages/harbor_tundra-u410.html"
+lead_days = 14
+
+[[page]]
+vendor = "harbor"
+model = "OnGuard 3K"
+url = "vendor_pages/harbor_onguard-3k.html"
+lead_days = 2
+
+[[page]]
+vendor = "bluestem"
+model = "NX-24P+"
+url = "vendor_pages/bluestem_nx-24p-plus.html"
+lead_days = 4
+
+[[page]]
+vendor = "harbor"
+model = "MiniSpin 12"
+url = "vendor_pages/harbor_minispin-12.html"

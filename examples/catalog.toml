@@ -1,0 +1,91 @@
+# Made-up makes and models with the specs from their (imaginary) datasheets.
+
+[[model]]
+model = "KC-1524R"
+maker = "Kestrel Instruments"
+category = "centrifuge"
+specs = { max_rcf = 21300, tube_slots = 24, voltage = 120, noise_db = 54, standards = ["UL 61010-1", "IEC 61010-2-020"] }
+
+[[model]]
+model = "AC-18 Cold"
+maker = "Ardent Labware"
+category = "centrifuge"
+specs = { max_rcf = 18000, tube_slots = 30, voltage = 120, noise_db = 51, standards = ["UL 61010-1", "IEC 61010-2-020"] }
+
+[[model]]
+model = "MiniSpin 12"
+maker = "Ardent Labware"
+category = "centrifuge"
+specs = { max_rcf = 12100, tube_slots = 12, voltage = 120, noise_db = 49, standards = ["UL 61010-1"] }
+
+[[model]]
+model = "KC-2400R-EU"
+maker = "Kestrel Instruments"
+category = "centrifuge"
+specs = { max_rcf = 24000, tube_slots = 24, voltage = 230, noise_db = 56, standards = ["IEC 61010-1", "IEC 61010-2-020"] }
+
+[[model]]
+model = "Polar 450H"
+maker = "Polaris Cold"
+category = "ult_freezer"
+specs = { capacity_l = 450, voltage = 120, refrigerant = ["R-290", "R-170"], kwh_per_day = 7.9, standards = ["UL 61010-1", "ENERGY STAR"] }
+
+[[model]]
+model = "Polar 500C"
+maker = "Polaris Cold"
+category = "ult_freezer"
+specs = { capacity_l = 500, voltage = 120, refrigerant = ["R-404A", "R-508B"], kwh_per_day = 14.2, standards = ["UL 61010-1"] }
+
+[[model]]
+model = "Tundra U410"
+maker = "Ardent Labware"
+category = "ult_freezer"
+specs = { capacity_l = 410, voltage = 120, refrigerant = ["R-290", "R-170"], kwh_per_day = 8.6, standards = ["UL 61010-1"] }
+
+[[model]]
+model = "OnGuard 3K"
+maker = "Tallow Power"
+category = "ups"
+specs = { va = 3000, topology = "online double-conversion", runtime_min_half_load = 14, standards = ["UL 1778"] }
+
+[[model]]
+model = "OnGuard 3K XR"
+maker = "Tallow Power"
+category = "ups"
+specs = { va = 3000, topology = "online double-conversion", runtime_min_half_load = 42, standards = ["UL 1778"] }
+
+[[model]]
+model = "LineSafe 3000"
+maker = "Brightwater"
+category = "ups"
+specs = { va = 3000, topology = "line-interactive", runtime_min_half_load = 19, standards = ["UL 1778"] }
+
+[[model]]
+model = "NX-24P"
+maker = "Corvid Networks"
+category = "switch"
+specs = { ports = 24, poe_budget_w = 370, managed = true }
+
+[[model]]
+model = "NX-24P+"
+maker = "Corvid Networks"
+category = "switch"
+specs = { ports = 24, poe_budget_w = 740, managed = true }
+
+[[model]]
+model = "HomeLink 24"
+maker = "Brightwater"
+category = "switch"
+specs = { ports = 24, poe_budget_w = 190, managed = false }
+
+[[model]]
+model = "VariPet 200"
+maker = "Ardent Labware"
+category = "pipette"
+specs = { range_ul = "20-200", weight_g = 98, standards = ["ISO 8655"] }
+
+[[model]]
+model = "LiteDraw 200"
+maker = "Kestrel Instruments"
+category = "pipette"
+specs = { range_ul = "20-200", weight_g = 79, standards = ["ISO 8655"] }

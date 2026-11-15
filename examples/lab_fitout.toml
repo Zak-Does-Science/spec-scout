@@ -1,0 +1,59 @@
+# A made-up example: fitting out a small molecular-biology lab.
+# Each [[item]] is what a specialist asked for. [item.require] are hard rules;
+# [item.prefer] ranks the models that pass ("high" or "low" is better).
+
+[project]
+name = "Field lab fit-out (example)"
+
+[[item]]
+id = "L1"
+name = "Microcentrifuge, refrigerated"
+qty = 2
+category = "centrifuge"
+require.max_rcf = { min = 15000 }
+require.tube_slots = { min = 24 }
+require.voltage = { eq = 120 }
+require.standards = { all = ["UL 61010-1", "IEC 61010-2-020"] }
+prefer.noise_db = "low"
+prefer.max_rcf = "high"
+
+[[item]]
+id = "L2"
+name = "-80 C upright freezer"
+qty = 1
+category = "ult_freezer"
+require.capacity_l = { min = 400 }
+require.voltage = { eq = 120 }
+require.refrigerant = { not_in = ["R-404A", "R-508B"] }
+require.standards = { all = ["UL 61010-1"] }
+prefer.kwh_per_day = "low"
+notes = "Hydrocarbon refrigerant only, per the site's sustainability standard."
+
+[[item]]
+id = "L3"
+name = "UPS for the freezer"
+qty = 1
+category = "ups"
+require.va = { min = 3000 }
+require.topology = { in = ["online double-conversion"] }
+require.standards = { all = ["UL 1778"] }
+prefer.runtime_min_half_load = "high"
+
+[[item]]
+id = "L4"
+name = "Managed PoE switch, 24 port"
+qty = 2
+category = "switch"
+require.ports = { min = 24 }
+require.poe_budget_w = { min = 370 }
+require.managed = { eq = true }
+prefer.poe_budget_w = "high"
+
+[[item]]
+id = "L5"
+name = "Adjustable pipette, 20-200 uL"
+qty = 6
+category = "pipette"
+require.range_ul = { eq = "20-200" }
+require.standards = { all = ["ISO 8655"] }
+prefer.weight_g = "low"
