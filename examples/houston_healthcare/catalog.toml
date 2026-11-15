@@ -1,0 +1,107 @@
+# Fictional products for the healthcare examples. Some are deliberately non-compliant
+# so the rule packs have something to reject.
+
+[[model]]
+model = "Sentinel 8"
+maker = "Watchpost Alarm"
+category = "intrusion"
+specs = { features = ["off-site monitoring", "perimeter sensors", "motion sensors", "supervised lines", "battery standby"] }
+[[model]]
+model = "HomeSafe DIY Kit"
+maker = "Brightwater"
+category = "intrusion"
+specs = { features = ["motion sensors", "app alerts"] }
+
+[[model]]
+model = "GateKeep 2"
+maker = "Lattice Access"
+category = "access_control"
+specs = { doors = 2, standards = ["UL 294"], fire_alarm_release = true, features = ["per-user credentials", "audit log"] }
+
+[[model]]
+model = "OD-4D"
+maker = "Owlridge Video"
+category = "camera"
+specs = { resolution_mp = 4, poe = true }
+[[model]]
+model = "Example bullet 4MP"
+maker = "Dahua"
+category = "camera"
+specs = { resolution_mp = 4, poe = true }
+
+[[model]]
+model = "NarcoLock 2"
+maker = "Ironside Safe"
+category = "cs_cabinet"
+specs = { cs_storage = "anchored locking cabinet", locking = true, gov_class_v = false }
+[[model]]
+model = "Steelvault C5"
+maker = "Ironside Safe"
+category = "cs_cabinet"
+specs = { cs_storage = "Class 5/6 safe", locking = true, gov_class_v = true }
+[[model]]
+model = "Drawer lockbox"
+maker = "Brightwater"
+category = "cs_cabinet"
+specs = { cs_storage = "portable lockbox", locking = true, gov_class_v = false }
+
+[[model]]
+model = "ColdLine PR-12"
+maker = "Glacier Medical"
+category = "vaccine_fridge"
+specs = { unit_type = "pharmaceutical", capacity_cuft = 12 }
+[[model]]
+model = "Mini 3.1"
+maker = "Brightwater"
+category = "vaccine_fridge"
+specs = { unit_type = "dorm-style", capacity_cuft = 3.1 }
+[[model]]
+model = "ColdLine PF-5"
+maker = "Glacier Medical"
+category = "vaccine_freezer"
+specs = { unit_type = "stand-alone", capacity_cuft = 5 }
+
+[[model]]
+model = "TempTrace DL-4"
+maker = "Glacier Medical"
+category = "data_logger"
+specs = { features = ["external display", "no password to view", "no sleep mode", "out-of-range alarm", "current/min/max display", "low-battery indicator", "detachable buffered probe"], accuracy_c = 0.5, memory_readings = 20000, log_interval_min = 15, calibration_cert = true }
+[[model]]
+model = "USB TempStick"
+maker = "Brightwater"
+category = "data_logger"
+specs = { features = ["out-of-range alarm"], accuracy_c = 1.0, memory_readings = 3000, log_interval_min = 60, calibration_cert = false }
+
+[[model]]
+model = "DeltaP Guard"
+maker = "Cleanair Controls"
+category = "pressure_monitor"
+specs = { pressure_indicator = true, alarm = true }
+[[model]]
+model = "Room Sensor Basic"
+maker = "Cleanair Controls"
+category = "pressure_monitor"
+specs = { pressure_indicator = false, alarm = false }
+
+[[model]]
+model = "Rackline NAS-4"
+maker = "Corvid Networks"
+category = "server"
+specs = { features = ["unique user IDs", "audit log", "encryption at rest"], usable_tb = 16 }
+[[model]]
+model = "HomeShare 2"
+maker = "Brightwater"
+category = "server"
+specs = { features = ["shared login"], usable_tb = 8 }
+
+[[model]]
+model = "ClinicPC 7"
+maker = "Harbor Systems"
+category = "workstation"
+specs = { features = ["unique user IDs", "audit log", "auto-lock", "privacy filter"] }
+
+[[model]]
+model = "CX-24P"
+maker = "Corvid Networks"
+category = "switch"
+specs = { ports = 24, poe_budget_w = 370 }

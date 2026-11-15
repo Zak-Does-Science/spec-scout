@@ -1,0 +1,61 @@
+# Made-up example: a physician-owned urgent care in Houston that stocks controlled
+# substances and gives TVFC vaccines. Fictional products and prices.
+
+[project]
+name = "Urgent care fit-out (example)"
+vertical = "urgent_care"
+site_type = "healthcare"
+jurisdiction = "city_of_houston"
+tax_exempt = false
+stores_cs = true
+tvfc = true
+use_dir_list = true
+rulepacks = ["../../rulepacks/texas_healthcare.toml", "../../rulepacks/houston_low_voltage.toml"]
+
+[[item]]
+id = "U1"
+name = "Indoor camera"
+qty = 10
+category = "camera"
+
+[[item]]
+id = "U2"
+name = "Door controller (med room, IDF)"
+qty = 2
+category = "access_control"
+
+[[item]]
+id = "U3"
+name = "Controlled-substance cabinet"
+qty = 1
+category = "cs_cabinet"
+
+[[item]]
+id = "U4"
+name = "Vaccine refrigerator"
+qty = 1
+category = "vaccine_fridge"
+
+[[item]]
+id = "U5"
+name = "Digital data logger (1 unit + 1 backup)"
+qty = 2
+category = "data_logger"
+
+[[item]]
+id = "U6"
+name = "EHR file / backup storage"
+qty = 1
+category = "server"
+
+[[item]]
+id = "U7"
+name = "Exam-room workstation"
+qty = 6
+category = "workstation"
+
+[[item]]
+id = "U8"
+name = "PoE switch"
+qty = 1
+category = "switch"

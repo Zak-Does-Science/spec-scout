@@ -32,7 +32,7 @@ If you'd rather not leave a window open, run the same command without `--daily` 
 
 ## Houston low-voltage work, and schools in particular
 
-`rulepacks/houston_k12_low_voltage.toml` is a rule pack for low-voltage projects in the Houston area (cameras, access control, fire alarm, panic alert, emergency responder radio, networks), with extra weight on Texas public schools. It reads a few facts from the project (`site_type`, `jurisdiction`, `tax_exempt`, `federal_funds`, `erate`, `in_floodplain`) and applies what fits:
+`rulepacks/houston_low_voltage.toml` is a rule pack for low-voltage projects in the Houston area (cameras, access control, fire alarm, panic alert, emergency responder radio, networks), with extra weight on Texas public schools. It reads a few facts from the project (`site_type`, `jurisdiction`, `tax_exempt`, `federal_funds`, `erate`, `in_floodplain`) and applies what fits:
 
 - **Who can't sell you what.** Federal-funds and E-Rate exclusions (Huawei, ZTE, Hytera, Hikvision, Dahua), plus the Texas prohibited-hardware list as a default exclusion.
 - **Equipment that has to carry a listing.** Inside City of Houston limits: UL 294 and fire-alarm release for access control on egress doors, fail-safe maglocks, UL 2524 / FCC / NEMA 4 signal boosters, UL 1037 key boxes. For schools: a UL 864 fire alarm with voice evacuation. For unincorporated Harris County: an addressable fire alarm.
@@ -49,7 +49,28 @@ Try it on a made-up elementary campus refresh:
 spec-scout run examples/houston_school/project.toml --catalog examples/houston_school/catalog.toml --vendors examples/houston_school/vendors.toml --prices examples/houston_school/prices.csv
 ```
 
-Writing a pack for another city is a matter of copying this one and changing the rules; the format is described at the top of `specscout/rulepack.py`.
+## Pharmacies, vet clinics and urgent cares
+
+Most of my projects were schools and commercial buildings, but I spent a lot of time pitching technology work to healthcare clients: pharmacies, veterinary clinics and urgent cares. Their rules are different again. A camera is optional behind a pharmacy counter and required at a pickup kiosk. A vet's drug cabinet has its own Texas definition. And the cheap USB thermometer someone bought for the vaccine fridge can cost a clinic its vaccine program.
+
+`rulepacks/texas_healthcare.toml` covers those three, plus how a freestanding ER differs from an urgent care. Load it next to the Houston pack and set `vertical` (`pharmacy`, `veterinary`, `urgent_care`, `freestanding_er`) and a few facts about the site (`stores_cs`, `tvfc`, `sterile_compounding`, `pickup_kiosk`, `wildlife_opioids`):
+
+- **Pharmacy.** A monitored alarm with perimeter and motion sensors (22 TAC 291.33). A lockable prescription department with designated key holders. Cameras and a 2-year pickup photo at automated kiosks. Monthly data backups with a 2-year audit trail. For sterile compounding, room pressure indicators and twice-yearly hood certification under the rules that took effect in March 2026.
+- **Veterinary.** The drug cabinet has to be one of the three kinds the Texas vet board allows (an anchored locking cabinet, a Class 5/6 safe, or a cabinet inside a protected room). Carfentanil and etorphine need a Government Class V container. Drug logs are kept 5 years, not DEA's 2. HIPAA doesn't cover animals, but Texas veterinary confidentiality and the state breach law do.
+- **Urgent care.** A physician-run urgent care needs no state facility licence, so no state nurse-call or generator rule applies. A freestanding ER is licensed and needs both, plus an NFPA 72 fire alarm.
+- **Everyone holding controlled substances.** DEA wants a securely locked, substantially constructed cabinet, theft reported within one business day, and records kept 2 years. The heavy GSA safe rules people quote are for manufacturers and distributors, so the pack doesn't demand them.
+- **Vaccines (TVFC).** No dorm fridges. A data logger that meets the full Texas Vaccines for Children spec (readable from outside, ±0.5 °C, 4,000 readings, 30-minute logging, a current calibration certificate), plus a spare. One plain wall outlet per unit with a plug guard, and no GFCI outlets or power strips.
+- **Privacy.** HIPAA's required safeguards for human-health clients (unique logins, audit logs, risk analysis, backups, wiping old drives), a business associate agreement with every vendor that touches patient data, Texas's broader medical-privacy law, and its breach-notice deadlines.
+
+Three made-up examples, one per business type:
+
+```
+spec-scout run examples/houston_healthcare/pharmacy.toml --catalog examples/houston_healthcare/catalog.toml --vendors examples/houston_healthcare/vendors.toml --prices examples/houston_healthcare/prices.csv
+```
+
+(swap in `vet_clinic.toml` or `urgent_care.toml`).
+
+Writing a pack for another city or industry is a matter of copying one of these and changing the rules; the format is described at the top of `specscout/rulepack.py`.
 
 ## Try it
 

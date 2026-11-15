@@ -1,0 +1,43 @@
+# Made-up example: a small-animal veterinary clinic in Houston. Fictional products and prices.
+
+[project]
+name = "Small-animal vet clinic refresh (example)"
+vertical = "veterinary"
+site_type = "healthcare"
+jurisdiction = "city_of_houston"
+tax_exempt = false
+stores_cs = true
+wildlife_opioids = false
+use_dir_list = true
+rulepacks = ["../../rulepacks/texas_healthcare.toml", "../../rulepacks/houston_low_voltage.toml"]
+
+[[item]]
+id = "V1"
+name = "Monitored intrusion alarm"
+qty = 1
+category = "intrusion"
+
+[[item]]
+id = "V2"
+name = "Controlled-substance cabinet"
+qty = 1
+category = "cs_cabinet"
+
+[[item]]
+id = "V3"
+name = "Door controller, drug room"
+qty = 1
+category = "access_control"
+
+[[item]]
+id = "V4"
+name = "Indoor camera"
+qty = 6
+category = "camera"
+
+[[item]]
+id = "V5"
+name = "Practice-management and x-ray image storage"
+qty = 1
+category = "server"
+require.usable_tb = { min = 12 }

@@ -1,0 +1,74 @@
+# Made-up example: a retail pharmacy in Houston that also does sterile compounding and
+# gives TVFC vaccines. Fictional products and prices.
+
+[project]
+name = "Neighborhood pharmacy with compounding room (example)"
+vertical = "pharmacy"
+site_type = "healthcare"
+jurisdiction = "city_of_houston"
+tax_exempt = false
+stores_cs = true
+tvfc = true
+sterile_compounding = true
+use_dir_list = true
+rulepacks = ["../../rulepacks/texas_healthcare.toml", "../../rulepacks/houston_low_voltage.toml"]
+
+[[item]]
+id = "P1"
+name = "Monitored intrusion alarm"
+qty = 1
+category = "intrusion"
+
+[[item]]
+id = "P2"
+name = "Door controller, prescription department"
+qty = 1
+category = "access_control"
+
+[[item]]
+id = "P3"
+name = "Indoor camera"
+qty = 8
+category = "camera"
+
+[[item]]
+id = "P4"
+name = "Controlled-substance cabinet"
+qty = 1
+category = "cs_cabinet"
+
+[[item]]
+id = "P5"
+name = "Vaccine refrigerator"
+qty = 1
+category = "vaccine_fridge"
+
+[[item]]
+id = "P6"
+name = "Vaccine freezer"
+qty = 1
+category = "vaccine_freezer"
+
+[[item]]
+id = "P7"
+name = "Digital data logger (2 units + 1 backup)"
+qty = 3
+category = "data_logger"
+
+[[item]]
+id = "P8"
+name = "Room pressure monitor (buffer + hazardous-drug room)"
+qty = 2
+category = "pressure_monitor"
+
+[[item]]
+id = "P9"
+name = "Pharmacy data storage / backup"
+qty = 1
+category = "server"
+
+[[item]]
+id = "P10"
+name = "Dispensing workstation"
+qty = 4
+category = "workstation"

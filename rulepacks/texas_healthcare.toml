@@ -1,0 +1,366 @@
+# Technology and security projects for Texas pharmacies, veterinary clinics, urgent cares
+# and freestanding emergency rooms. Load it alongside houston_low_voltage.toml for a
+# Houston site to pick up the City permit, alarm-permit and sales-tax rules.
+#
+# Project keys this pack reads (set them under [project]):
+#   vertical           = "pharmacy" | "veterinary" | "urgent_care" | "freestanding_er"
+#   stores_cs          = true if controlled substances are kept on site
+#   tvfc               = true if enrolled in Texas Vaccines for Children (or storing vaccine to TVFC standard)
+#   sterile_compounding= true for a pharmacy doing sterile (USP <797>-type) compounding
+#   pickup_kiosk       = true for an automated pharmacy pickup kiosk or locker
+#   wildlife_opioids   = true for vet practices stocking carfentanil, etorphine, thiafentanil or diprenorphine
+#
+# Spec names the hard rules check:
+#   features (list), cs_storage, gov_class_v, unit_type, accuracy_c, memory_readings,
+#   log_interval_min, calibration_cert, pressure_indicator
+#
+# Categories: intrusion, camera, access_control, cs_cabinet, vaccine_fridge, vaccine_freezer,
+#   data_logger, pressure_monitor, nurse_call, server, backup, workstation, switch, wifi_ap, generator
+
+[pack]
+name = "Texas healthcare: pharmacy, vet, urgent care"
+as_of = "2026-11-15"
+disclaimer = "A planning aid, not legal or compliance advice. Confirm with the licensing board, DEA field office and the client's privacy officer. Federal text from eCFR as of 2026-11-01; Texas rules from the Texas Register and law.cornell.edu; TVFC manual Rev. 08/2026; CDC toolkit July 2026."
+
+# ================================================================ hard equipment rules
+
+# ---------------- pharmacy
+
+[[rule]]
+id = "TSBP-291.33-ALARM"
+title = "Pharmacy alarm: off-site monitoring with perimeter and motion sensors"
+categories = ["intrusion"]
+when = { vertical = "pharmacy" }
+require.features = { all = ["off-site monitoring", "perimeter sensors", "motion sensors"] }
+cite = "22 TAC 291.33(b)(2)(B)(iii)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-291-33"
+
+[[rule]]
+id = "TSBP-291.133-PRESSURE"
+title = "Sterile compounding rooms need a readily monitored pressure indicator"
+categories = ["pressure_monitor"]
+when = { sterile_compounding = true }
+require.pressure_indicator = { eq = true }
+cite = "22 TAC 291.133(d)(8)(D)(i), (d)(9)(B)(i) (amended eff. 2026-03-01)"
+url = "https://www.sos.state.tx.us/texreg/archive/February202026/Adopted%20Rules/22.EXAMINING%20BOARDS.html"
+
+# ---------------- veterinary
+
+[[rule]]
+id = "TBVME-573.61-CS"
+title = "Vet controlled-substance storage must be one of the three Texas options"
+categories = ["cs_cabinet"]
+when = { vertical = "veterinary" }
+require.cs_storage = { in = ["anchored locking cabinet", "Class 5/6 safe", "cabinet in protected room"] }
+cite = "22 TAC 573.61(4)-(5)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-573-61"
+
+[[rule]]
+id = "DEA-1301.75e"
+title = "Carfentanil and etorphine need a U.S. Government Class V container"
+categories = ["cs_cabinet"]
+when = { wildlife_opioids = true }
+require.gov_class_v = { eq = true }
+cite = "21 CFR 1301.75(e)"
+url = "https://www.ecfr.gov/current/title-21/section-1301.75"
+
+# ---------------- any vertical holding controlled substances
+
+[[rule]]
+id = "DEA-1301.75b"
+title = "Controlled substances in a securely locked, substantially constructed cabinet"
+categories = ["cs_cabinet"]
+when = { stores_cs = true }
+require.locking = { eq = true }
+cite = "21 CFR 1301.75(b) (GSA safe rules in 1301.72 apply to manufacturers and distributors, not here)"
+url = "https://www.ecfr.gov/current/title-21/section-1301.75"
+
+# ---------------- vaccine cold chain (TVFC)
+
+[[rule]]
+id = "TVFC-UNIT"
+title = "No dorm-style or single-door combination units for vaccine"
+categories = ["vaccine_fridge", "vaccine_freezer"]
+when = { tvfc = true }
+require.unit_type = { in = ["pharmaceutical", "purpose-built", "NSF/ANSI 456", "stand-alone"] }
+cite = "TVFC Provider Operations Manual (Rev. 08/2026) p.52; CDC Storage & Handling Toolkit (Jul 2026)"
+url = "https://www.dshs.texas.gov/sites/default/files/LIDS-Immunizations/pdf/pdf_stock/11-13602.pdf"
+
+[[rule]]
+id = "TVFC-LOGGER"
+title = "Digital data logger meets the TVFC specification"
+categories = ["data_logger"]
+when = { tvfc = true }
+require.features = { all = ["external display", "no password to view", "no sleep mode", "out-of-range alarm",
+                            "current/min/max display", "low-battery indicator", "detachable buffered probe"] }
+require.accuracy_c = { max = 0.5 }
+require.memory_readings = { min = 4000 }
+require.log_interval_min = { max = 30 }
+require.calibration_cert = { eq = true }
+cite = "TVFC Provider Operations Manual (Rev. 08/2026) pp.59-62"
+url = "https://www.dshs.texas.gov/sites/default/files/LIDS-Immunizations/pdf/pdf_stock/11-13602.pdf"
+
+# ---------------- freestanding ER (licensed facility)
+
+[[rule]]
+id = "HHSC-509.143-NURSECALL"
+title = "Freestanding ER nurse call: audible, located, visual, cancelled only at the patient station"
+categories = ["nurse_call"]
+when = { vertical = "freestanding_er" }
+require.features = { all = ["repeating audible signal", "location display", "visual signal",
+                            "cancel at patient station only", "staff emergency assist"] }
+cite = "26 TAC 509.143(i)(13)"
+url = "https://www.law.cornell.edu/regulations/texas/26-Tex-Admin-Code-SS-509-143"
+
+# ---------------- HIPAA technical safeguards (human health only)
+
+[[rule]]
+id = "HIPAA-164.312"
+title = "Systems holding ePHI: unique user IDs and audit logging"
+categories = ["server", "workstation"]
+when = { vertical = ["pharmacy", "urgent_care", "freestanding_er"] }
+require.features = { all = ["unique user IDs", "audit log"] }
+cite = "45 CFR 164.312(a)(2)(i), (b)"
+url = "https://www.ecfr.gov/current/title-45/section-164.312"
+
+# ================================================================ checklist
+
+# ---------------- shared
+
+[[check]]
+id = "HIPAA-164.308"
+kind = "privacy"
+title = "HIPAA risk analysis, backup, disaster recovery and emergency-mode plans"
+when = { vertical = ["pharmacy", "urgent_care", "freestanding_er"] }
+text = "Required before go-live: a documented risk analysis and risk management plan, a data backup plan, a disaster recovery plan and an emergency-mode operation plan covering the new systems. Keep the documentation 6 years."
+cite = "45 CFR 164.308(a)(1), (a)(7); 164.316(b)"
+url = "https://www.ecfr.gov/current/title-45/section-164.308"
+
+[[check]]
+id = "HIPAA-164.310"
+kind = "privacy"
+title = "Facility access, workstation security, and wiping old drives"
+when = { vertical = ["pharmacy", "urgent_care", "freestanding_er"] }
+text = "Facility security plan for rooms holding ePHI systems (MDF/IDF, server closet). Workstations placed or screened so the public can't read them. Wipe or destroy drives in replaced PCs, copiers and camera recorders before they leave; budget certified disposal."
+cite = "45 CFR 164.310(a)-(d)"
+url = "https://www.ecfr.gov/current/title-45/section-164.310"
+
+[[check]]
+id = "HIPAA-NPRM"
+kind = "watch"
+title = "Proposed HIPAA Security Rule overhaul (not final)"
+when = { vertical = ["pharmacy", "urgent_care", "freestanding_er"] }
+text = "A January 2025 proposal would make encryption and multi-factor authentication mandatory and require an asset inventory and network map. It was not final as of this pack's date. Buying gear that supports MFA and encryption now avoids a refit later."
+cite = "90 FR 898 (RIN 0945-AA22)"
+url = "https://www.reginfo.gov/public/do/eAgendaViewRule?pubId=202504&RIN=0945-AA22"
+
+[[check]]
+id = "TX-181"
+kind = "privacy"
+title = "Texas medical-records privacy training"
+when = { vertical = ["pharmacy", "urgent_care", "freestanding_er"] }
+text = "Texas covers anyone who comes into possession of PHI, including IT and security contractors. Staff are trained within 90 days of hire, with signed records kept 6 years."
+cite = "Health & Safety Code 181.001(b)(2)(B), 181.101"
+url = "https://texas.public.law/statutes/tex._health_and_safety_code_section_181.101"
+
+[[check]]
+id = "TX-521.053"
+kind = "privacy"
+title = "Breach notice clauses in IT and camera-cloud contracts"
+text = "Texas requires notice to affected people within 60 days and to the Attorney General within 30 days if 250+ Texans are affected. A vendor holding data it doesn't own must tell the owner immediately. Encrypted data still counts as breached if the key was taken. This applies to vet clinics too."
+cite = "Bus. & Com. Code 521.053"
+url = "https://texas.public.law/statutes/tex._bus._and_com._code_section_521.053"
+
+[[check]]
+id = "ADA-COUNTER"
+kind = "site"
+title = "Counter height and reach for card readers, PIN pads and intercoms"
+categories = ["access_control", "workstation"]
+text = "Service counters need a section at most 36 in. high. Card readers, intercoms and exit buttons sit 15-48 in. above the floor; door hardware 34-48 in., usable with one hand."
+cite = "2010 ADA Standards 308, 309.4, 404.2.7, 904.4"
+url = "https://www.access-board.gov/ada/"
+
+# ---------------- pharmacy
+
+[[check]]
+id = "TSBP-291.33-ACCESS"
+kind = "security"
+title = "Prescription department: lockable, designated key holders, entry log"
+categories = ["access_control", "intrusion"]
+when = { vertical = "pharmacy" }
+text = "The prescription department must lock whenever no pharmacist is on site, and be secured separately if it closes while the store is open. Only people the pharmacist-in-charge names in writing may unlock; keys and codes can't be duplicated without approval; non-employee entry with no pharmacist present is documented. Electronic access control with per-person credentials and an audit log covers all three."
+cite = "22 TAC 291.33(b)(2)(B)-(D)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-291-33"
+
+[[check]]
+id = "TSBP-291.33-CAMERA"
+kind = "design"
+title = "Cameras are optional at the counter"
+categories = ["camera"]
+when = { vertical = "pharmacy" }
+text = "Texas lists video surveillance as optional for a Class A pharmacy. Choose camera coverage for loss prevention, not because the board requires it."
+cite = "22 TAC 291.33(b)(2)(B)(iii)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-291-33"
+
+[[check]]
+id = "TSBP-291.121-KIOSK"
+kind = "design"
+title = "Pickup kiosk: cameras and a photo of each pickup kept 2 years"
+when = { pickup_kiosk = true }
+text = "An automated pickup system needs a security system including cameras, and must capture a digital image of each person picking up, kept 2 years. Size storage for it."
+cite = "22 TAC 291.121(d)(4)(C), (d)(5)(D)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-291-121"
+
+[[check]]
+id = "TSBP-291.34-DATA"
+kind = "records"
+title = "Pharmacy system backup and 2-year audit trail"
+categories = ["server", "backup"]
+when = { vertical = "pharmacy" }
+text = "Back up the pharmacy data system at least monthly, keep a 2-year drug-usage audit trail that can be produced within 72 hours, and report significant data loss to the board within 10 days."
+cite = "22 TAC 291.34(e)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-291-34"
+
+[[check]]
+id = "TSBP-291.133-CERT"
+kind = "inspection"
+title = "Sterile compounding: hood certification every 6 months, cleanroom 20 C or cooler"
+when = { sterile_compounding = true }
+text = "Hoods and isolators are certified at install and every 6 months, buffer rooms held at +0.02 in. w.c. or more, hazardous-drug rooms at -0.01 in. w.c. or less. Budget the twice-yearly certification contract."
+cite = "22 TAC 291.133 (amended eff. 2026-03-01)"
+url = "https://www.sos.state.tx.us/texreg/archive/February202026/Adopted%20Rules/22.EXAMINING%20BOARDS.html"
+
+[[check]]
+id = "TSBP-291.15-TEMPS"
+kind = "design"
+title = "Set monitoring alarms to the board's storage ranges"
+categories = ["data_logger", "vaccine_fridge", "vaccine_freezer"]
+when = { vertical = "pharmacy" }
+text = "Refrigerator 2-8 C, freezer -25 to -10 C, controlled room temperature 15-30 C."
+cite = "22 TAC 291.15"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-291-15"
+
+# ---------------- veterinary
+
+[[check]]
+id = "TBVME-573.61-ACCESS"
+kind = "records"
+title = "Written list of everyone with access to controlled substances"
+when = { vertical = "veterinary" }
+text = "Only authorized staff enter controlled-substance storage. Keep a dated access list; an access-control audit log makes this easy. Change combinations when a knowledgeable employee leaves."
+cite = "22 TAC 573.61(3), (5)(C)"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-573-61"
+
+[[check]]
+id = "TBVME-573.50-52"
+kind = "records"
+title = "Vet record retention: 5 years for drug logs, 3 years for patient records"
+categories = ["server", "backup"]
+when = { vertical = "veterinary" }
+text = "Controlled-substance logs are kept 5 years (longer than DEA's 2). Medical records including radiographs are kept at least 3 years after the last visit. Size practice-management and imaging storage and backups for both."
+cite = "22 TAC 573.50, 573.52"
+url = "https://www.law.cornell.edu/regulations/texas/22-Tex-Admin-Code-SS-573-50"
+
+[[check]]
+id = "TX-801.353"
+kind = "privacy"
+title = "Vet client confidentiality (HIPAA does not cover animals)"
+when = { vertical = "veterinary" }
+text = "Veterinary records are confidential under the Veterinary Licensing Act, released only with written client consent or the listed exceptions. Protect the practice-management system accordingly; the Texas breach law still applies."
+cite = "Occupations Code 801.353"
+url = "https://texas.public.law/statutes/tex._occ._code_section_801.353"
+
+# ---------------- urgent care and freestanding ER
+
+[[check]]
+id = "TX-254.052"
+kind = "licence"
+title = "Urgent care in a physician's office needs no state facility licence"
+when = { vertical = "urgent_care" }
+text = "So no state nurse-call or generator mandate applies; building, fire and electrical codes and local permits do. A facility that calls itself an emergency room is different: it is licensed under 26 TAC 509."
+cite = "Health & Safety Code 254.052(3)"
+url = "https://texas.public.law/statutes/tex._health_and_safety_code_section_254.052"
+
+[[check]]
+id = "HHSC-509.143-POWER"
+kind = "design"
+title = "Freestanding ER essential power and fire alarm"
+when = { vertical = "freestanding_er" }
+text = "Either an onsite Type II generator with 24 hours of fuel, or a portable-generator contract with a plug-in transfer switch and 1.5-hour battery emergency lighting. Fire alarm to NFPA 72 with the panel or an annunciator in view. Notify HHSC before construction."
+cite = "26 TAC 509.143(i)(14), (i)(15)"
+url = "https://www.law.cornell.edu/regulations/texas/26-Tex-Admin-Code-SS-509-143"
+
+[[check]]
+id = "DSHS-289.226"
+kind = "licence"
+title = "X-ray registration within 30 days of first use"
+when = { vertical = ["urgent_care", "freestanding_er"] }
+text = "Register new x-ray equipment with DSHS within 30 days of beginning use."
+cite = "25 TAC 289.226"
+url = "https://www.law.cornell.edu/regulations/texas/25-Tex-Admin-Code-SS-289-226"
+
+# ---------------- DEA
+
+[[check]]
+id = "DEA-1301.71"
+kind = "security"
+title = "DEA judges security as a whole: alarm with supervised lines and standby power helps"
+when = { stores_cs = true }
+text = "DEA weighs the cabinet, key control, an alarm with supervised lines and standby power, location and public access together. The local DEA office will review plans in advance."
+cite = "21 CFR 1301.71"
+url = "https://www.ecfr.gov/current/title-21/section-1301.71"
+
+[[check]]
+id = "DEA-1301.76"
+kind = "records"
+title = "Theft reporting and records"
+when = { stores_cs = true }
+text = "Report theft or significant loss to the DEA field office within 1 business day and file Form 106 within 45 days. Keep DEA records 2 years (Texas vets: 5). Pharmacies also take a Texas inventory every May 1."
+cite = "21 CFR 1301.76(b), 1304.04; 22 TAC 291.17"
+url = "https://www.ecfr.gov/current/title-21/section-1301.76"
+
+# ---------------- vaccine cold chain
+
+[[check]]
+id = "TVFC-POWER"
+kind = "site"
+title = "Vaccine units: one dedicated outlet each, no GFCI, plug guard, signs"
+categories = ["vaccine_fridge", "vaccine_freezer"]
+when = { tvfc = true }
+text = "Plug each unit straight into its own wall outlet with a plug guard. No power strips, surge protectors, extension cords, switched outlets or GFCI outlets, and 'Do Not Unplug' signs at the outlet and breaker. The electrician has to reconcile this with NEC GFCI rules before rough-in."
+cite = "TVFC Provider Operations Manual (Rev. 08/2026) pp.54, 58"
+url = "https://www.dshs.texas.gov/sites/default/files/LIDS-Immunizations/pdf/pdf_stock/11-13602.pdf"
+
+[[check]]
+id = "TVFC-BACKUP"
+kind = "design"
+title = "One logger per unit, plus a spare, plus a room thermometer"
+categories = ["data_logger"]
+when = { tvfc = true }
+text = "Order one data logger per storage unit plus a backup logger with its own current calibration certificate, kept outside the units. Certificates must not expire before year-end; budget recalibration every 2-3 years. New units run 7 days of logged readings before vaccine goes in."
+cite = "TVFC Provider Operations Manual (Rev. 08/2026) pp.53, 59-62"
+url = "https://www.dshs.texas.gov/sites/default/files/LIDS-Immunizations/pdf/pdf_stock/11-13602.pdf"
+
+[[check]]
+id = "TVFC-FREEZER"
+kind = "design"
+title = "Frozen vaccine needs a stand-alone freezer"
+categories = ["vaccine_freezer"]
+when = { tvfc = true }
+text = "Sites enrolled after 2024-07-01 may not use a household unit's freezer compartment for vaccine."
+cite = "TVFC Provider Operations Manual (Rev. 08/2026) p.52"
+url = "https://www.dshs.texas.gov/sites/default/files/LIDS-Immunizations/pdf/pdf_stock/11-13602.pdf"
+
+# ================================================================ whole-order rules
+
+[[order_rule]]
+id = "HIPAA-BAA"
+title = "Business associate agreement with every vendor that touches ePHI"
+when = { vertical = ["pharmacy", "urgent_care", "freestanding_er"] }
+categories = ["server", "backup", "workstation", "camera", "switch", "wifi_ap"]
+basis = "vendor"
+min_total = 0
+require_vendor_attr = "baa"
+text = "Managed IT, cloud backup, hosted pharmacy/EHR systems, camera-cloud and VoIP vendors that create, receive, keep or transmit ePHI need a signed BAA before work starts."
+cite = "45 CFR 164.308(b), 164.314"
+url = "https://www.ecfr.gov/current/title-45/section-164.308"

@@ -1,0 +1,23 @@
+# Fictional vendors. `baa = true` means a HIPAA business associate agreement is on file.
+
+[[vendor]]
+id = "clinictech"
+name = "ClinicTech IT Services"
+shipping = 0
+baa = true
+
+[[vendor]]
+id = "bayou"
+name = "Bayou Security Supply"
+shipping = 150
+free_shipping_over = 25000
+
+[[vendor]]
+id = "coldchain"
+name = "Coldchain Direct"
+shipping = 220
+
+[[vendor]]
+id = "boxstore"
+name = "Big Box Electronics"
+shipping = 0

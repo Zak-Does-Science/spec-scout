@@ -1,4 +1,5 @@
-# Low-voltage work in Houston, Texas, with K-12 school rules.
+# Low-voltage work in Houston, Texas, with extra K-12 school rules.
+# Healthcare projects load this together with texas_healthcare.toml.
 #
 # Project keys this pack reads (set them under [project]):
 #   site_type      = "k12" | "commercial"
@@ -17,7 +18,7 @@
 # panic_alert, errcs_bda, key_box, switch, wifi_ap, cable, intrusion
 
 [pack]
-name = "Houston low voltage (K-12)"
+name = "Houston low voltage (schools and general)"
 as_of = "2026-11-15"
 disclaimer = "A planning aid, not legal advice. Codes and statutes change; confirm with the authority having jurisdiction and the district's purchasing office before buying. Statute text was read from a mirror current to May 2025 plus 2025 bill analyses."
 
@@ -153,9 +154,9 @@ url = "https://www.houstonpermittingcenter.org/media/9076/download"
 [[check]]
 id = "HOU-PERMIT"
 kind = "permit"
-title = "City of Houston permits apply to ISD projects"
+title = "City of Houston permits (school districts included)"
 when = { jurisdiction = "city_of_houston" }
-text = "Houston enforces the 2021 I-codes and the 2023 NEC (in force since 2024-01-01), and school districts must get City permits. Power-limited work under 50 V / 50 W, and sound, phone and burglar-alarm wiring, need no electrical permit except for the power connection. Fire alarm, ERRCS and access-controlled egress doors need fire/building permits."
+text = "Houston enforces the 2021 I-codes and the 2023 NEC (in force since 2024-01-01); school districts must get City permits too. Power-limited work under 50 V / 50 W, and sound, phone and burglar-alarm wiring, need no electrical permit except for the power connection. Fire alarm, ERRCS and access-controlled egress doors need fire/building permits."
 cite = "Ord. 2023-9071; Houston IBC 105.2; Houston NEC admin. 403"
 url = "https://www.houstonpermittingcenter.org/media/9031/download"
 
@@ -301,6 +302,7 @@ url = "https://capitol.texas.gov/tlodocs/89R/analysis/html/SB01173F.htm"
 [[order_rule]]
 id = "TX-VERIFY"
 title = "Israel, energy-company and firearm verifications"
+when = { site_type = "k12" }
 basis = "vendor"
 min_total = 100000
 require_vendor_attr = "verifications_on_file"

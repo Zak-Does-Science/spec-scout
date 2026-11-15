@@ -100,7 +100,12 @@ def order_checks(packs: list[dict], project: dict, lines: list[Line],
                 continue
             basis = order_total if o.get("basis", "order") == "order" else None
             attr = o.get("require_vendor_attr")
+            # optional: only vendors supplying lines in these categories
+            cats = o.get("categories")
+            in_scope = {ln.offer.vendor for ln in lines if _cats_match(cats, ln.requirement.category)}
             for vid, spend in by_vendor.items():
+                if vid not in in_scope:
+                    continue
                 amount = basis if basis is not None else spend
                 if amount < float(o.get("min_total", 0)):
                     continue

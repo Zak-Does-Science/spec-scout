@@ -10,7 +10,7 @@ federal_funds = true
 erate = false
 use_dir_list = true
 in_floodplain = true
-rulepacks = ["../../rulepacks/houston_k12_low_voltage.toml"]
+rulepacks = ["../../rulepacks/houston_low_voltage.toml"]
 
 [[item]]
 id = "S1"
